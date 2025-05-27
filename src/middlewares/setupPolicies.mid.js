@@ -1,4 +1,5 @@
-import { usersManager } from "../data/manager.mongo.js";
+//import { usersManager } from "../dao/factory.js";
+import usersRepository from "../repositories/users.repository.js";
 import { verifyToken } from "../helpers/token.util.js";
 
 const setupPolicies = (policies) => async (req, res, next) => {
@@ -14,7 +15,7 @@ const setupPolicies = (policies) => async (req, res, next) => {
     };
     const verifyRole = roles[role];
     if (!verifyRole) return res.json403();
-    const user = await usersManager.readById(_id);
+    const user = await usersRepository.readById(_id);
     const { password, __v, createdAt, updatedAt, ...rest } = user;
     req.user = rest;
     next();

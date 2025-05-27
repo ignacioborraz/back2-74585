@@ -1,25 +1,26 @@
 import RouterHelper from "../helpers/router.helper.js";
-import { productsManager } from "../data/manager.mongo.js";
+//import { productsManager } from "../dao/factory.js";
+import productsRepository from "../repositories/products.repository.js";
 
 const homeViewCb = async (req, res) => {
-  const products = await productsManager.readAll();
+  const products = await productsRepository.readAll();
   res.status(200).render("index", { products });
 };
 const productViewCb = async (req, res) => {
   const { pid } = req.params;
-  const product = await productsManager.readById(pid);
+  const product = await productsRepository.readById(pid);
   res.status(200).render("product", { product });
 };
 const registerViewCb = async (req, res) => {
-  const products = await productsManager.readAll();
+  const products = await productsRepository.readAll();
   res.status(200).render("register", { products });
 };
 const loginViewCb = async (req, res) => {
-  const products = await productsManager.readAll();
+  const products = await productsRepository.readAll();
   res.status(200).render("login", { products });
 };
 const profileViewCb = async (req, res) => {
-  const products = await productsManager.readAll();
+  const products = await productsRepository.readAll();
   res.status(200).render("profile", { products });
 };
 
