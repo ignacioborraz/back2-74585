@@ -35,6 +35,11 @@ class AuthRouter extends RouterHelper {
       passportCb("google"),
       authController.loginCb
     );
+    this.read(
+      "/verify/:email/:verifyCode",
+      ["PUBLIC"],
+      authController.verifyCb
+    )
   };
 }
 

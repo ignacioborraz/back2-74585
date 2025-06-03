@@ -7,41 +7,29 @@ import { compareHash } from "../helpers/hash.util.js";
 //implementando la capa de repositorios: LO CORRECTO ES LLAMAR AL REPOSITORIO (que indirectamente esta llamando al factory)
 import usersRepository from "../repositories/users.repository.js";
 import { createToken } from "../helpers/token.util.js";
+import verifyUserEmail from "../helpers/verifyUser.helper.js";
 
 const callbackURL = "http://localhost:8080/api/auth/google/redirect";
 
 passport.use(
-  /* nombre de la estrategia */
   "register",
-  /* constructor de la estrategia*/
   new LocalStrategy(
-    /* objeto de configuración de la estrategia */
     { passReqToCallback: true, usernameField: "email" },
-    /* callback de la logica de la estrategia */
     async (req, email, password, done) => {
       try {
         const { city } = req.body;
         if (!city) {
-          //const error = new Error("Invalid data");
-          //error.statusCode = 400;
-          //throw error;
           return done(null, null, { message: "Invalid data", statusCode: 400 });
         }
         let user = await usersRepository.readBy({ email });
         if (user) {
-          //const error = new Error("Invalid credentials");
-          //error.statusCode = 401;
-          //throw error;
           return done(null, null, {
             message: "Invalid credentials",
             statusCode: 401,
           });
         }
-        //req.body.password = createHash(password);
-        //el repositorio SE ENCARGA DE HASHEAR!!!
         user = await usersRepository.createOne(req.body);
-        /* gracias a este done, se agregan los datos del usuario */
-        /* al objeto de requerimientos (req.user) */
+        await verifyUserEmail(user.email, user.verifyCode);
         done(null, user);
       } catch (error) {
         done(error);
@@ -71,6 +59,13 @@ passport.use(
           return done(null, null, {
             message: "Invalid credentials",
             statusCode: 401,
+          });
+        }
+        const verifyAccount = user.isVerified
+        if (!verifyAccount) {
+          return done(null, null, {
+            message: "Please verify your account!",
+            statusCode: 400,
           });
         }
         const data = {

@@ -23,6 +23,10 @@ const profileViewCb = async (req, res) => {
   const products = await productsRepository.readAll();
   res.status(200).render("profile", { products });
 };
+const verifyViewCb = async (req, res) => {
+  const { email } = req.params
+  res.status(200).render("verify", { email });
+};
 
 class ViewsRouter extends RouterHelper {
   constructor() {
@@ -35,6 +39,7 @@ class ViewsRouter extends RouterHelper {
     this.render("/register", ["PUBLIC"], registerViewCb);
     this.render("/login", ["PUBLIC"], loginViewCb);
     this.render("/profile", ["USER", "ADMIN"], profileViewCb);
+    this.render("/verify/:email", ["PUBLIC"], verifyViewCb)
   };
 }
 

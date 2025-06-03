@@ -26,6 +26,15 @@ class AuthController {
   };
   badAuthCb = (req, res) => res.json401();
   forbiddenCb = (req, res) => res.json403();
+  verifyCb = async (req, res) => {
+    const { email, verifyCode } = req.params;
+    const user = await this.service.readBy({ email, verifyCode });
+    if (!user) {
+      res.json404();
+    }
+    await this.service.updateById(user._id, { isVerified: true });
+    res.json200({ isVerified: true });
+  };
 }
 
 const authController = new AuthController();
